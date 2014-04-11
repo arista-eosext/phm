@@ -287,27 +287,28 @@ def checkInterfaces():
                 errors[ intf ] = {}
                 errors[ intf ][ 'fcs' ] = details[ 'fcs' ]
                 errors[ intf ][ 'symbol' ] = details[ 'symbol' ]
-                errors[ intf ][ 'count' ] = 0
+                errors[ intf ][ 'fcs_count' ] = 0
+                errors[ intf ][ 'symbol_count' ] = 0
             else:
                 fcsBase = errors[ intf ][ 'fcs' ]
                 if details[ 'fcs' ] < fcsBase:
                     # Counters cleared
                     trace( 'Resetting FCS base for %s' % intf )
                     errors[ intf ][ 'fcs' ] = details[ 'fcs' ]
-                    errors[ intf ][ 'count' ] = 0                    
+                    errors[ intf ][ 'fcs_count' ] = 0
                 elif details[ 'fcs' ] > fcsBase + FCS_ERROR_TOLERANCE:
                     log_fcs_errors( intf, fcsBase, details[ 'fcs' ] )
                     errors[ intf ][ 'fcs' ] = details[ 'fcs' ]
-                    errors[ intf ][ 'count' ] += 1
+                    errors[ intf ][ 'fcs_count' ] += 1
                 elif details[ 'fcs' ] > fcsBase + FCS_DEGRADE_TOLERANCE:
                     log_fcs_degradation( intf, fcsBase, details[ 'fcs' ] )
                     errors[ intf ][ 'fcs' ] = details[ 'fcs' ]
-                    errors[ intf ][ 'count' ] = 0
+                    errors[ intf ][ 'fcs_count' ] = 0
                 else:
                     trace( 'FCS counters for %s OK' % intf )
-                    errors[ intf ][ 'count' ] = 0
+                    errors[ intf ][ 'fcs_count' ] = 0
                     
-                if errors[ intf ][ 'count' ] == FAIL_INTERVAL_COUNT:
+                if errors[ intf ][ 'fcs_count' ] == FAIL_INTERVAL_COUNT:
                     log_fcs_failure( intf )
                     eapi.turnOffInterface( intf )
 
@@ -317,22 +318,22 @@ def checkInterfaces():
                     # Counters cleared
                     trace( 'Resetting SYMBOL base for %s' % intf )
                     errors[ intf ][ 'symbol' ] = details[ 'symbol' ]
-                    errors[ intf ][ 'count' ] = 0                    
+                    errors[ intf ][ 'symbol_count' ] = 0                    
                 elif details[ 'symbol' ] > symbolBase + SYMBOL_ERROR_TOLERANCE:
                     log_symbol_errors( intf, symbolBase, details[ 'symbol' ] )
                     errors[ intf ][ 'symbol' ] = details[ 'symbol' ]
-                    errors[ intf ][ 'count' ] += 1
+                    errors[ intf ][ 'symbol_count' ] += 1
                 elif details[ 'symbol' ] > symbolBase + \
                         SYMBOL_DEGRADE_TOLERANCE:
                     log_symbol_degradation( intf, symbolBase, 
                                             details[ 'symbol' ] )
                     errors[ intf ][ 'symbol' ] = details[ 'symbol' ]
-                    errors[ intf ][ 'count' ] = 0
+                    errors[ intf ][ 'symbol_count' ] = 0
                 else:
                     trace( 'SYMBOL counters for %s OK' % intf )
-                    errors[ intf ][ 'count' ] = 0
+                    errors[ intf ][ 'symbol_count' ] = 0
                     
-                if errors[ intf ][ 'count' ] == FAIL_INTERVAL_COUNT:
+                if errors[ intf ][ 'symbol_count' ] == FAIL_INTERVAL_COUNT:
                     log_symbol_failure( intf )
                     eapi.turnOffInterface( intf )
 
