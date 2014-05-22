@@ -147,7 +147,7 @@ FCS_DEGRADE_TOLERANCE = 100
 FCS_ERROR_TOLERANCE = 200
 
 # Increase in symbol errors which triggers a degradation alert
-SYMBOL_DEGRADE_TOLERANCE = 10
+SYMBOL_DEGRADE_TOLERANCE = 100
 
 # Increase in symbol errors which triggers a failure alert
 SYMBOL_ERROR_TOLERANCE = 200
