@@ -241,7 +241,7 @@ class EApiClient( object ):
             cmds, mode)[ 1: ]
 
         if mode == 'text':
-            return [ x.values()[ 0 ] for x in result if x.values()]
+            return [ x.values()[ 0 ] for x in result if x.values() ]
         else:
             return result
         
