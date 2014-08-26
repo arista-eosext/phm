@@ -241,7 +241,7 @@ class EApiClient( object ):
             cmds, mode)[ 1: ]
 
         if mode == 'text':
-            return [ x.values()[ 0 ] for x in result ]
+            return [ x.values()[ 0 ] for x in result if x.values()]
         else:
             return result
         
@@ -270,9 +270,9 @@ class EApiClient( object ):
         return self.interfaceErrorCounters( self.connectedInterfaces() )
     
     def turnOffInterface( self, interface ):
-        self.runEnableCmds( self, [ 'configure',
-                                    'interface %s' % interface,
-                                    'shutdown' ] )
+        self.runEnableCmds( [ 'configure',
+                              'interface %s' % interface,
+                              'shutdown' ] )
 
 def checkInterfaces():
     eapi = EApiClient()
