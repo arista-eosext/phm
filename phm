@@ -164,42 +164,42 @@ def trace( msg ):
         print msg
 
 def log_fcs_degradation( intf, start, end ):
-    msg = '%%INTERFSCE-4-FCS_DEGRADATION_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_DEGRADATION_WARNING: ' \
           'FCS degradation detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end )
     syslog.syslog( msg )
     trace( msg )
 
 def log_fcs_errors( intf, start, end ):
-    msg = '%%INTERFSCE-4-FCS_ERRORS_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_ERRORS_WARNING: ' \
           'FCS errors detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end ) 
     syslog.syslog( msg )
     trace( msg )
 
 def log_fcs_failure( intf ):
-    msg = '%%INTERFSCE-4-FCS_FAILURE_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_FAILURE_WARNING: ' \
           'Interface %s was turned off because a constant ' \
           'increase in the number of FCS errors was detected' % intf 
     syslog.syslog( msg )
     trace( msg )
 
 def log_symbol_degradation( intf, start, end ):
-    msg = '%%INTERFSCE-4-SYMBOL_DEGRADATION_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_DEGRADATION_WARNING: ' \
           'SYMBOL degradation detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end )
     syslog.syslog( msg )
     trace( msg )
 
 def log_symbol_errors( intf, start, end ):
-    msg = '%%INTERFSCE-4-SYMBOL_ERRORS_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_ERRORS_WARNING: ' \
          'SYMBOL errors detected on %s - error count ' \
          'increased from %s to %s' % ( intf, start, end ) 
     syslog.syslog( msg )
     trace( msg )
 
 def log_symbol_failure( intf ):
-    msg = '%%INTERFSCE-4-SYMBOL_FAILURE_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_FAILURE_WARNING: ' \
           'Interface %s was turned off because a constant ' \
           'increase in the number of SYMBOL errors was detected' % intf 
     syslog.syslog( msg )
