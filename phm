@@ -145,7 +145,7 @@ EAPI_METHOD = 'http'
 EAPI_POLL_INTERVAL = 5       # in seconds
 
 # Optional Emailing recipient
-EMAIL_TO = "ad.arista.01@gmail.com"
+EMAIL_TO = "change.me.recipient@domain"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
