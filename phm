@@ -40,6 +40,8 @@
 #           - removed email notifications
 #       3.0 - use eAPI for polling interface counters
 #           - configuration at the top of the script
+#       4.0 - emailing option
+#           - bug fixes
 
 '''
    DESCRIPTION
@@ -101,6 +103,9 @@
       off. This check is performed by verifying whether the increase
       in the error counters exceed the failure threshold for several
       polling intervals.
+      
+      In order to receive email alerts, use the '--email' or '-e' 
+      command line option.
 
       In order to enable debugging output to stdout, use the '--debug'
       command line option.
@@ -111,8 +116,8 @@
       purposes.
 
    COMPATIBILITY
-      Version 3.0 has been developed and tested against
-      EOS-4.13.3F. Please reach out to support@aristanetworks.com if
+      Version 4.0 has been developed and tested against
+      EOS-4.14.1F. Please reach out to support@aristanetworks.com if
       you want to run this against a different EOS release.
 
   LIMITATIONS
@@ -124,6 +129,7 @@ import optparse
 import socket
 import syslog
 import time
+import subprocess
 
 from ctypes import cdll, byref, create_string_buffer
 
@@ -137,6 +143,9 @@ EAPI_METHOD = 'http'
 
 # How often to poll for information (seconds)
 EAPI_POLL_INTERVAL = 5       # in seconds
+
+# Optional Emailing recipient
+EMAIL_TO = "change.me.recipient@domain"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -162,47 +171,65 @@ errors = {}
 def trace( msg ):
     if debug:
         print msg
+        
+def email( msg ):
+    if email_active:
+        # send msg to the email body, get the hostname+first word of msg as subject
+        bashCommand = 'echo ' + msg + ' |  email -i -s \"[$HOSTNAME] ' + \
+                      msg.split(' ')[0] + '\" ' + EMAIL_TO
+        p = subprocess.Popen( bashCommand , 
+                              shell=True, 
+                              stdout=subprocess.PIPE, 
+                              stderr=subprocess.PIPE )
+        p.wait()
+        
 
 def log_fcs_degradation( intf, start, end ):
-    msg = '%%INTERFSCE-4-FCS_DEGRADATION_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_DEGRADATION_WARNING: ' \
           'FCS degradation detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end )
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 def log_fcs_errors( intf, start, end ):
-    msg = '%%INTERFSCE-4-FCS_ERRORS_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_ERRORS_WARNING: ' \
           'FCS errors detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end ) 
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 def log_fcs_failure( intf ):
-    msg = '%%INTERFSCE-4-FCS_FAILURE_WARNING: ' \
+    msg = '%%INTERFACES-4-FCS_FAILURE_WARNING: ' \
           'Interface %s was turned off because a constant ' \
           'increase in the number of FCS errors was detected' % intf 
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 def log_symbol_degradation( intf, start, end ):
-    msg = '%%INTERFSCE-4-SYMBOL_DEGRADATION_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_DEGRADATION_WARNING: ' \
           'SYMBOL degradation detected on %s - error count ' \
           'increased from %s to %s' % ( intf, start, end )
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 def log_symbol_errors( intf, start, end ):
-    msg = '%%INTERFSCE-4-SYMBOL_ERRORS_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_ERRORS_WARNING: ' \
          'SYMBOL errors detected on %s - error count ' \
          'increased from %s to %s' % ( intf, start, end ) 
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 def log_symbol_failure( intf ):
-    msg = '%%INTERFSCE-4-SYMBOL_FAILURE_WARNING: ' \
+    msg = '%%INTERFACES-4-SYMBOL_FAILURE_WARNING: ' \
           'Interface %s was turned off because a constant ' \
           'increase in the number of SYMBOL errors was detected' % intf 
     syslog.syslog( msg )
+    email( msg )
     trace( msg )
 
 
@@ -344,8 +371,10 @@ def checkInterfaces():
         time.sleep(EAPI_POLL_INTERVAL)
 
 debug = None
+email_active = None
 def main():
     global debug
+    global email_active
 
     setProcName( 'phm' )
 
@@ -354,10 +383,13 @@ def main():
     op = optparse.OptionParser(usage=usage)
     op.add_option( '-d', '--debug', dest='debug', action='store_true',
                    help='print debug info' )
+    op.add_option( '-e', '--email', dest='email', action='store_true',
+                   help='sends email alerts' )
     opts, _ = op.parse_args()
     
     debug = opts.debug
-
+    email_active = opts.email
+    
     syslog.openlog( 'phm', 0, syslog.LOG_LOCAL4 )
 
     checkInterfaces()
